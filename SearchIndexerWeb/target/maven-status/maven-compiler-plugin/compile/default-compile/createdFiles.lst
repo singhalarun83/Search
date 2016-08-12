@@ -1,0 +1,8 @@
+com/erosnow/search/indexer/configuration/AppConfig.class
+com/erosnow/search/indexer/controller/IndexerConsumerController.class
+com/erosnow/search/indexer/configuration/HibernateConfiguration.class
+com/erosnow/search/indexer/controller/IndexerConfigurationController.class
+com/erosnow/search/indexer/aspect/DBResponseTimeInterceptor.class
+com/erosnow/search/indexer/controller/IndexerTestController.class
+com/erosnow/search/indexer/configuration/AppInitializer.class
+com/erosnow/search/indexer/controller/IndexerImportController.class

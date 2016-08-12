@@ -1,0 +1,645 @@
+CREATE DATABASE `searcher`;
+use `searcher`;
+
+CREATE TABLE `search_property` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `indexer_configuration` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `url` varchar(200) NOT NULL,
+  `enabled` tinyint(1) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `group_id` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+insert into indexer_configuration values(1,'indexer','http://localhost:8080/service/searchIndexer',1,now(),now(),'idx');
+
+CREATE TABLE `consumer_type_configuration` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `queue_name` text,
+  `queue_url` text,
+  `index_size` int(10) NOT NULL,
+  `flush_interval` int(10) NOT NULL,
+  `enabled` tinyint(1) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `queue_type` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+insert into consumer_type_configuration values(1, 'sampleKafkaListener','sampleKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(2, 'sampleAMQListener','sampleAMQListenerQueue','failover:(tcp://localhost:61616)',10,10,1,now(), now(), 'MQ');
+insert into consumer_type_configuration values(3, 'sampleAMQAggregatorListener','sampleAMQAggListenerQueue','failover:(tcp://localhost:61616)',10,10,1,now(), now(), 'MQ');
+insert into consumer_type_configuration values(4, 'contentKafkaListener','contentKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(5, 'roleKafkaListener','roleKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(6, 'keywordKafkaListener','keywordKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(7, 'recommendationKafkaListener','recommendationKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(8, 'contentImagePathKafkaListener','contentImagePathKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(9, 'contentAllKafkaListener','contentAllKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(10, 'contentAssetProductkafkaListener','contentAssetProductkafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(11, 'productMoviesKafkaListener','productMoviesKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(12, 'basicCountKafkaListener','basicCountKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(13, 'allowBlockKafkaListener','allowBlockKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(14, 'genrekKafkaListener','genrekKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(15, 'parentContentKafkaListener','parentContentKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(16, 'playlistImageKafkaListener','playlistImageKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(17, 'playlistDetailKafkaListener','playlistDetailKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(18, 'playlistAllowKafkaListener','playlistAllowKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(19, 'contentAssetImagePathKafkaListener','contentAssetImagePathKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(20, 'premiumCountKafkaListener','premiumCountKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(21, 'totalCountKafkaListener','totalCountKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(22, 'contentProductkafkaListener','contentProductkafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(23, 'subtitleKafkaListener','subtitleKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+insert into consumer_type_configuration values(24, 'deleteContentKafkaListener','deleteContentKafkaListenerTopic','localhost:9092',10,10,1,now(), now(), 'KAFKA');
+
+
+CREATE TABLE `producer_consumer_configuration` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `topic_name` varchar(100) NOT NULL,
+  `config` varchar(100) NOT NULL,
+  `property_name` varchar(100) NOT NULL,
+  `property_value` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("sampleKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("roleKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("keywordKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("recommendationKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentImagePathKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetImagePathKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAllKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentAssetProductkafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("productMoviesKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("basicCountKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("allowBlockKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("genrekKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("parentContentKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistImageKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistDetailKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("playlistAllowKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("premiumCountKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("totalCountKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("contentProductkafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("subtitleKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","request.required.acks" ,"1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","producer.type" ,"sync");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","serializer.class" ,"com.erosnow.search.indexer.services.util.FSTEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","key.serializer.class" ,"kafka.serializer.StringEncoder");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","partitioner.class" ,"com.erosnow.search.indexer.services.util.KafkaPartitioner");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","message.send.max.retries" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","retry.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","compression.codec" ,"gzip");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"producer","metadata.broker.list" ,"localhost:9092");
+
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","group.id" ,"idx");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","fetch.message.max.bytes" ,"1048576");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","auto.commit.enable" ,"true");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","auto.commit.interval.ms" ,"60000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","queued.max.message.chunks" ,"10");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","auto.offset.reset" ,"largest");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","consumer.timeout.ms" ,"-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","client.id" ,"search-indexer-web-1");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","zookeeper.session.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","zookeeper.connection.timeout.ms" ,"6000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","zookeeper.sync.time.ms" ,"10000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","offsets.channel.backoff.ms" ,"1000");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","offsets.commit.max.retries" ,"5");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","num.partitions" ,"20");
+INSERT INTO producer_consumer_configuration (topic_name, config, property_name, property_value) VALUES ("deleteContentKafkaListenerTopic" ,"consumer","zookeeper.connect" ,"localhost:2181");
+
+
