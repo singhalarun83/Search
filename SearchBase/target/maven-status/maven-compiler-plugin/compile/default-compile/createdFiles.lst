@@ -1,8 +1,0 @@
-com/erosnow/search/base/model/ext/SearchResponse.class
-com/erosnow/search/base/model/ext/SearchRequest.class
-com/erosnow/search/base/model/ext/SearchSRO.class
-com/erosnow/search/base/model/common/ServiceResponse.class
-com/erosnow/search/base/util/SortCategory.class
-com/erosnow/search/base/model/common/ServiceResponse$ResponseStatus.class
-com/erosnow/search/base/model/ext/SpellSuggestionSRO.class
-com/erosnow/search/base/model/common/ServiceRequest.class
