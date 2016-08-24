@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <properties>
-	<!-- <topic name="indexerTopic" config="producer">
+	<!-- Promo Negated Kafka -->
+	<topic name="indexerPromoNegatedKafkaTopic" config="producer">
 		<property name="metadata.broker.list" value="127.0.0.1:9092" />
-		<property name="request.required.acks" value="1" />		
+		<property name="request.required.acks" value="1" />
 		<property name="producer.type" value="sync" />
+		<!-- <property name="serializer.class" value="com.snapdeal.kafka.util.FSTEncoder" /> -->
 		<property name="key.serializer.class" value="kafka.serializer.StringEncoder" />
+		<!-- <property name="partitioner.class"
+			value="com.snapdeal.kafka.util.PogAccumulatorPartitioner" /> -->
 		<property name="message.send.max.retries" value="10000" />
 		<property name="retry.backoff.ms" value="30000" />
 	</topic>
 
-	<topic name="indexerTopic" config="consumer" groupId="prod-test">
+	<topic name="indexerPromoNegatedKafkaTopic" config="consumer"
+		groupId="prod-test">
 		<property name="group.id" value="prod-test" />
 		<property name="zookeeper.connect" value="127.0.0.1:2181" />
 		<property name="fetch.message.max.bytes" value="1048576" />
@@ -18,10 +23,11 @@
 		<property name="queued.max.message.chunks" value="10" />
 		<property name="auto.offset.reset" value="largest" />
 		<property name="consumer.timeout.ms" value="-1" />
+		<property name="client.id" value="search-indexer-web-2" />
 		<property name="zookeeper.session.timeout.ms" value="6000" />
 		<property name="zookeeper.connection.timeout.ms" value="6000" />
 		<property name="zookeeper.sync.time.ms" value="10000" />
 		<property name="offsets.channel.backoff.ms" value="1000" />
 		<property name="offsets.commit.max.retries" value="5" />
-	</topic> -->
+	</topic>
 </properties>

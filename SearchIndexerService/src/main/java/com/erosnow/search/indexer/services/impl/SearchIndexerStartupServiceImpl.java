@@ -1,6 +1,11 @@
 package com.erosnow.search.indexer.services.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -28,10 +33,15 @@ import com.erosnow.search.common.metrics.Metrics;
 import com.erosnow.search.common.metrics.MetricsReporter;
 import com.erosnow.search.common.service.SearchConfigurationService;
 import com.erosnow.search.common.util.CommonUtil;
+import com.erosnow.search.common.util.Listener;
 import com.erosnow.search.common.util.SearchPropertyEnum;
 import com.erosnow.search.indexer.services.SearchIndexerServiceFactory;
 import com.erosnow.search.indexer.services.SearchIndexerStartupService;
 import com.erosnow.search.indexer.services.consumer.ConsumerSpawnService;
+import com.erosnow.search.indexer.services.dataImport.dao.AbstractDao;
+import com.erosnow.search.indexer.services.dataImport.service.ContentService;
+import com.erosnow.search.indexer.services.dto.KafkaPushDTO;
+import com.erosnow.search.indexer.services.producer.RequeueService;
 
 @Component("searchIndexerStartupService")
 public class SearchIndexerStartupServiceImpl implements SearchIndexerStartupService, ApplicationContextAware {
@@ -51,6 +61,12 @@ public class SearchIndexerStartupServiceImpl implements SearchIndexerStartupServ
 	@Autowired
 	private SearchIndexerServiceFactory searchIndexerServiceFactory;
 
+	@Autowired
+	protected ContentService contentService;
+
+	@Autowired
+	protected RequeueService requeueService;
+
 	@PostConstruct
 	public void loadAllAtStartup() {
 		LOG.info("Load at startup:start");
@@ -60,6 +76,8 @@ public class SearchIndexerStartupServiceImpl implements SearchIndexerStartupServ
 		initReloadCache();
 		initFlushingScheduler();
 		initGraphiteReporting();
+		initDeltaImport();
+		initDeleteContent();
 		LOG.info("Load at startup:end");
 	}
 
@@ -85,14 +103,78 @@ public class SearchIndexerStartupServiceImpl implements SearchIndexerStartupServ
 		loadIndexerConfigurations();
 		LOG.info("Reloadable:end");
 	}
-	
+
+	private void deltaImport() {
+		LOG.info("Delta Import:start");
+		int poolSize = CacheManager.getInstance().getCache(SearchPropertyCache.class)
+				.getIntegerProperty(SearchPropertyEnum.DELTA_CORE_THREAD_POOL_SIZE);
+		ExecutorService executorService = new ThreadPoolExecutor(poolSize, 1000, 60, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<Runnable>());
+		for (final String deltaQuery : AbstractDao.CONTENT_DELTA_QUERIES) {
+			executorService.execute(new Runnable() {
+				@Override
+				public void run() {
+					importTask(deltaQuery);
+				}
+			});
+		}
+		executorService.shutdown();
+		try {
+			LOG.info("Waiting for delta import Threads to Shutdown");
+			executorService.awaitTermination(1, TimeUnit.HOURS);
+			LOG.info("Delta iimport Threads Shutdown Successfully");
+		} catch (InterruptedException e) {
+			LOG.error("exception while shutting down delta import threads", e);
+		}
+		LOG.info("Delta import:end");
+	}
+
+	private void importTask(String deltaQuery) {
+		SearchPropertyCache cache = CacheManager.getInstance().getCache(SearchPropertyCache.class);
+		LOG.info("Executing delta query {}", deltaQuery);
+		List<Map<String, Object>> contents = contentService.getDeltaContentIds(deltaQuery,
+				cache.getIntegerProperty(SearchPropertyEnum.DELTA_IMPORT_DURATION_MINS));
+		for (Map<String, Object> content : contents) {
+			LOG.info("Content id:{} found for delta query {}", content, deltaQuery);
+			String contentId = content.get("unique_id").toString();
+			for (String listener : RequeueService.CONTENT_LISTENERS) {
+				KafkaPushDTO dto = new KafkaPushDTO(contentId, Long.parseLong(contentId));
+				try {
+					requeueService.requeue(listener, dto);
+				} catch (Exception e) {
+					LOG.error("Exception while re-queueing delta " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void deleteContent() {
+		LOG.info("Delete Content:start");
+		SearchPropertyCache cache = CacheManager.getInstance().getCache(SearchPropertyCache.class);
+		List<Map<String, Object>> contents = contentService.getDeltaContentIds(AbstractDao.CONTENT_DELETE_QUERY,
+				cache.getIntegerProperty(SearchPropertyEnum.DELETE_IMPORT_DURATION_MINS));
+		for (Map<String, Object> content : contents) {
+			LOG.info("Content id:{} found for delete query {}", content, AbstractDao.CONTENT_DELETE_QUERY);
+			String contentId = content.get("unique_id").toString();
+			KafkaPushDTO dto = new KafkaPushDTO(contentId, Long.parseLong(contentId));
+			try {
+				requeueService.requeue(Listener.DELETE_CONTENT_KAFKA_LISTENER, dto);
+			} catch (Exception e) {
+				LOG.error("Exception while re-queueing delete " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		LOG.info("Delete Content:end");
+	}
+
 	@SuppressWarnings("rawtypes")
 	public void loadAggregatorConfigCache() {
-        LOG.info("Loading Aggregator Config Cache..");
-        AggregatorConfigCache configCache = new AggregatorConfigCache();
-        CacheManager.getInstance().setCache(configCache);
-        LOG.info("Aggregator Config Cache loaded SUCCESSFULLY");
-    }
+		LOG.info("Loading Aggregator Config Cache..");
+		AggregatorConfigCache configCache = new AggregatorConfigCache();
+		CacheManager.getInstance().setCache(configCache);
+		LOG.info("Aggregator Config Cache loaded SUCCESSFULLY");
+	}
 
 	public void loadIndexerConfigurations() {
 		LOG.info("Loading Indexer Configurations...");
@@ -133,6 +215,40 @@ public class SearchIndexerStartupServiceImpl implements SearchIndexerStartupServ
 					}
 				}
 			}, cache.getReloadCacheReferenceTime(), interval);
+		}
+	}
+
+	private void initDeltaImport() {
+		SearchPropertyCache cache = CacheManager.getInstance().getCache(SearchPropertyCache.class);
+		if (cache.getBooleanProperty(SearchPropertyEnum.DELTA_IMPORT_ENABLED)) {
+			long interval = cache.getLongProperty(SearchPropertyEnum.DELTA_IMPORT_INTERVAL);
+			reloadCacheScheduler.scheduleAtFixedRate(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						deltaImport();
+					} catch (Exception ex) {
+						LOG.error("Error in initDeltaImport thread", ex);
+					}
+				}
+			}, interval);
+		}
+	}
+
+	private void initDeleteContent() {
+		SearchPropertyCache cache = CacheManager.getInstance().getCache(SearchPropertyCache.class);
+		if (cache.getBooleanProperty(SearchPropertyEnum.DELETE_IMPORT_ENABLED)) {
+			long interval = cache.getLongProperty(SearchPropertyEnum.DELETE_IMPORT_INTERVAL);
+			reloadCacheScheduler.scheduleWithFixedDelay(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						deleteContent();
+					} catch (Exception ex) {
+						LOG.error("Error in initDeleteContent thread", ex);
+					}
+				}
+			}, interval);
 		}
 	}
 

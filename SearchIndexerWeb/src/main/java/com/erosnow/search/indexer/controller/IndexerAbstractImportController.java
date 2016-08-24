@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.erosnow.search.common.util.Listener;
 import com.erosnow.search.indexer.services.dataImport.service.ContentService;
 import com.erosnow.search.indexer.services.dataImport.service.PlaylistService;
 import com.erosnow.search.indexer.services.dto.KafkaPushDTO;
@@ -25,16 +24,6 @@ public class IndexerAbstractImportController {
 	protected RequeueService requeueService;
 
 	private static final Logger LOG = LoggerFactory.getLogger(IndexerAbstractImportController.class);
-	public static final String CONTENT_LISTENERS[] = new String[] { Listener.CONTENT_KAFKA_LISTENER,
-			Listener.ROLE_KAFKA_LISTENER, Listener.KEYWORD_KAFKA_LISTENER, Listener.RECOMMENDATION_KAFKA_LISTENER,
-			Listener.CONTENT_IMAGEPATH_KAFKA_LISTENER, Listener.CONTENT_ASSET_IMAGEPATH_KAFKA_LISTENER,
-			Listener.CONTENT_ALL_KAFKA_LISTENER, Listener.CONTENT_ASSET_PRODUCT_KAFKA_LISTENER,
-			Listener.CONTENT_PRODUCT_KAFKA_LISTENER, Listener.PRODUCT_MOVIES_KAFKA_LISTENER,
-			Listener.BASIC_COUNT_KAFKA_LISTENER, Listener.PREMIUM_COUNT_KAFKA_LISTENER,
-			Listener.TOTAL_COUNT_KAFKA_LISTENER, Listener.ALLOW_BLOCK_KAFKA_LISTENER, Listener.GENRE_KAFKA_LISTENER,
-			Listener.PARENT_CONTENT_KAFKA_LISTENER, Listener.SUBTITLE_KAFKA_LISTENER };
-	public static final String PLAYLIST_LISTENERS[] = new String[] { Listener.PLAYLIST_IMAGE_KAFKA_LISTENER,
-			Listener.PLAYLIST_ALLOW_KAFKA_LISTENER, Listener.PLAYLIST_DETAIL_KAFKA_LISTENER };
 
 	protected void print(List<Map<String, Object>> contents, boolean requeue, boolean print, String... listeners)
 			throws Exception {

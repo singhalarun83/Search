@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erosnow.search.indexer.services.producer.RequeueService;
+
 @RestController("indexerImportController")
 @RequestMapping("/service/searchIndexer/")
 public class IndexerImportController extends IndexerAbstractImportController {
@@ -18,7 +20,7 @@ public class IndexerImportController extends IndexerAbstractImportController {
 	public void importAllContents(@RequestParam(required = false, value = "print", defaultValue = "false") boolean print,
 			@RequestParam(required = false, value = "requeue", defaultValue = "true") boolean requeue)
 					throws Exception {
-		print(contentService.getAllContentIds(), requeue, print, CONTENT_LISTENERS);
+		print(contentService.getAllContentIds(), requeue, print, RequeueService.CONTENT_LISTENERS);
 	}
 
 	@RequestMapping("importAllPlaylists")
@@ -26,7 +28,7 @@ public class IndexerImportController extends IndexerAbstractImportController {
 	public void importAllPlaylists(@RequestParam(required = false, value = "print", defaultValue = "false") boolean print,
 			@RequestParam(required = false, value = "requeue", defaultValue = "true") boolean requeue)
 					throws Exception {
-		print(playlistService.getAllPlaylistIds(), requeue, print, PLAYLIST_LISTENERS);
+		print(playlistService.getAllPlaylistIds(), requeue, print, RequeueService.PLAYLIST_LISTENERS);
 	}
 
 }

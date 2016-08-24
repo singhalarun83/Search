@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="Content" version="1.6">
+   <field name="_version_" type="long" indexed="true" stored="false" />
+   <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
+
+	<field name="content_id" type="string" indexed="true" stored="true" multiValued="false" /> 
+	<field name="content_type_id" type="string" indexed="true" stored="true"/>
+	<field name="content_title" type="text_general" indexed="true" stored="true"/>
+	<field name="content_duration" type="string" indexed="true" stored="true"/>
+	<field name="track_number" type="int" indexed="true" stored="true"/>
+	<field name="content_language" type="string" indexed="true" stored="true"/>
+	<field name="erosnow_views" type="int" stored="true"/>
+	<field name="youtube_views" type="int" stored="true"/>
+	<field name="episode_number" type="int" indexed="true" stored="true"/>
+	<field name="content_popularity" type="int" stored="true"/>
+	<field name="content_release_date" type="string" indexed="true" stored="true"/>
+	<field name="parent_content_id" type="string" indexed="true" stored="true"/>
+
+	<field name="content_prefix" type="string" indexed="true" stored="true"/>
+	<field name="content_short_description" type="string" stored="true"/>
+
+	<field name="asset_id" type="string" indexed="true" stored="true" />
+	<field name="asset_title" type="text_general" indexed="true" stored="true"/>
+	<field name="asset_type" type="text_general" indexed="true" stored="true"/>
+	<field name="attribute_id" type="string" indexed="true" stored="true"/>
+	<field name="title" type="text_general" indexed="true" stored="true"/>
+	<field name="prefix" type="string" indexed="true" stored="true"/>
+	<field name="description" type="string" stored="true"/>
+	<field name="short_description" type="string" stored="true"/>
+	<field name="language" type="string" indexed="true" stored="true"/>
+	<field name="rating" type="float" indexed="true" stored="true"/>
+	<field name="release_year" type="string" indexed="true" stored="true"/>
+	<field name="release_date" type="string" indexed="true" stored="true"/>
+
+	<field name="asset_popularity" type="int" stored="true"/>
+	<field name="synopsis" type="string" stored="true"/>
+	<field name="eros_rating" type="float" indexed="true" stored="true"/>
+	<field name="duration" type="string" indexed="true" stored="true"/>
+	<field name="musician" type="string" stored="true"/>
+	<field name="top_songs" type="string" stored="true"/>
+	<field name="number_of_tracks" type="int" stored="true"/>
+	<field name="first_aired_date" type="string" indexed="true" stored="true"/>
+	<field name="first_aired_year" type="string" indexed="true" stored="true"/>
+	<field name="attribute_genre" type="string" indexed="true"/>
+	<field name="attribute_lyricist" type="string" indexed="true"/>
+	<field name="start_date" type="string" indexed="true" multiValued="true"/>
+	<field name="end_date" type="string" indexed="true" multiValued="true"/>
+
+	<field name="content_genre_id" type="int" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_genre" type="string" indexed="true" stored="true" multiValued="true"/>
+	<field name="genre_id" type="int" indexed="true" multiValued="true"/>
+	<field name="genre" type="string" indexed="true" multiValued="true"/>
+
+	<field name="content_allowed" type="string" stored="true" multiValued="true" default="WW"/>
+	<field name="asset_allowed" type="string" stored="true" multiValued="true" default="WW"/>
+	<field name="allowed" type="string" stored="true" multiValued="true" default="WW"/>
+	<field name="blocked" type="string" stored="true" multiValued="true" default="WW"/>
+	<field name="asset_content_allowed" type="string" stored="true" multiValued="true" default="WW"/>
+
+
+	<field name="content_recommendation" type="string" stored="true" multiValued="true"/>
+	<field name="recommendation" type="string" stored="true" multiValued="true"/>
+
+	<field name="content_product" type="int" stored="true" multiValued="true"/>
+	<field name="content_product_name" type="string" stored="true" multiValued="true"/>
+	<field name="content_product_count" type="int" stored="true" default="0"/>
+	<field name="product" type="int" stored="true" multiValued="true"/>
+	<field name="product_name" type="string" stored="true" multiValued="true"/>
+	<field name="product_count" type="int" stored="true" default="0"/>
+
+
+	<field name="content_actor" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_director" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_music director" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_lyricist" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_playback" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_producer" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_singer" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="actor" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="director" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="music director" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="playback" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="producer" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="singer" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="lyricist" type="text_general" indexed="true" stored="true" multiValued="true"/>
+
+	<field name="content_keywords" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<field name="keywords" type="text_general" indexed="true" stored="true" multiValued="true"/>
+
+
+	<field name="content_image_type" type="int" stored="true" multiValued="true"/>
+	<field name="content_images" type="string" stored="true" multiValued="true"/>
+	<field name="content_qimage_type" type="string" stored="true" multiValued="true"/>
+	<field name="content_qimages" type="string" stored="true" multiValued="true"/>
+	<field name="image_type" type="int" stored="true" multiValued="true"/>
+	<field name="images" type="string" stored="true" multiValued="true"/>
+	<field name="qimage_type" type="string" stored="true" multiValued="true"/>
+	<field name="qimages" type="string" stored="true" multiValued="true"/>
+
+	<field name="play_url" type="string" indexed="true" stored="true" multiValued="true"/>
+	<field name="content_bitrates" type="text_general" indexed="true" stored="true" multiValued="true"/>
+
+	<field name="products_movies" type="int" indexed="true" multiValued="true"/>
+	<field name="products_albums" type="int" indexed="true" multiValued="true"/>
+	<field name="products_tvshows" type="int" indexed="true" multiValued="true"/>
+
+	<field name="total_contents" type="int" indexed="true" multiValued="true"/>
+	<field name="basic_geo_allowed" type="string" stored="true" multiValued="true"/>
+	<field name="basic_count" type="int" indexed="true" multiValued="true"/>
+	<field name="premium_geo_allowed" type="string" stored="true" multiValued="true"/>
+	<field name="premium_count" type="int" indexed="true" multiValued="true"/> 
+
+	<field name="subtitles" type="string" stored="true" multiValued="true"/>
+
+	<field name="content_type_count" type="int" stored="true" multiValued="true" />
+	<field name="content_types" type="string" stored="true" multiValued="true"/>
+	<field name="content_type_ids" type="int" stored="true" multiValued="true"/>
+	<field name="content_id_all" type="int" stored="true" multiValued="true"/>
+	<field name="content_type_id_all" type="int" stored="true" multiValued="true"/>
+
+
+	<field name="unique_id" type="string" indexed="true" stored="true" required="true"/>
+	<field name="page_id" type="string" indexed="true" stored="true" />
+	<field name="location_id" type="string" indexed="true" stored="true" />
+	<field name="position" type="string" indexed="true" stored="true" />
+	<field name="playlist_id" type="string" indexed="true" stored="true" />
+	<field name="rank" type="int" indexed="true" stored="true"/>
+	<field name="playlist_type" type="string" indexed="true" stored="true"/>
+	<field name="playlist_title" type="string" indexed="true" stored="true"/>
+	<field name="playlist_is_publishable" type="string" stored="true"/>
+	<field name="playlist_image_type" type="int" stored="true" multiValued="true"/>
+	<field name="playlist_images" type="string" stored="true" multiValued="true"/>
+	<field name="is_publishable" type="string" stored="true"/>
+	<field name="content_is_publishable" type="string" stored="true"/>
+
+	<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+	<field name="autofill" type="phonetics" indexed="true" stored="false" multiValued="true"/>
+	<field name="spellField" type="spellFieldType" indexed="true" stored="false" multiValued="true"/>
+	
+	<uniqueKey>unique_id</uniqueKey>
+
+	<copyField source="title" dest="text"/>
+	<copyField source="actor" dest="text"/>
+	<copyField source="director" dest="text"/>
+	<copyField source="music director" dest="text"/>
+	<copyField source="lyricist" dest="text"/>
+	<copyField source="playback" dest="text"/>
+	<copyField source="producer" dest="text"/>
+	<copyField source="singer" dest="text"/>
+	<copyField source="keywords" dest="text"/>
+	<copyField source="genre" dest="text"/>
+	<copyField source="content_title" dest="text"/>
+        <copyField source="content_actor" dest="text"/>
+        <copyField source="content_director" dest="text"/>
+        <copyField source="content_music director" dest="text"/>
+        <copyField source="content_lyricist" dest="text"/>
+        <copyField source="content_playback" dest="text"/>
+        <copyField source="content_producer" dest="text"/>
+        <copyField source="content_singer" dest="text"/>
+        <copyField source="content_keywords" dest="text"/>
+        <copyField source="content_genre" dest="text"/>
+
+	<copyField source="page_id" dest="text"/>
+	<copyField source="location_id" dest="text"/>
+	<copyField source="position" dest="text"/>
+	<copyField source="playlist_id" dest="text"/>
+	<copyField source="asset_id" dest="text"/>
+	<copyField source="content_id" dest="text"/>
+
+	<copyField source="title" dest="autofill"/>
+	<copyField source="actor" dest="autofill"/>
+	<copyField source="director" dest="autofill"/>
+	<copyField source="music director" dest="autofill"/>
+	<copyField source="lyricist" dest="autofill"/>
+	<copyField source="playback" dest="autofill"/>
+	<copyField source="producer" dest="autofill"/>
+	<copyField source="singer" dest="autofill"/>
+        <copyField source="keywords" dest="autofill"/>
+        <copyField source="genre" dest="autofill"/>
+	<copyField source="content_title" dest="autofill"/>
+        <copyField source="content_actor" dest="autofill"/>
+        <copyField source="content_director" dest="autofill"/>
+        <copyField source="content_music director" dest="autofill"/>
+        <copyField source="content_lyricist" dest="autofill"/>
+        <copyField source="content_playback" dest="autofill"/>
+        <copyField source="content_producer" dest="autofill"/>
+        <copyField source="content_singer" dest="autofill"/>
+        <copyField source="content_keywords" dest="autofill"/>
+        <copyField source="content_genre" dest="autofill"/>
+
+
+	<copyField source="title" dest="spellField"/>
+	<copyField source="actor" dest="spellField"/>
+	<copyField source="director" dest="spellField"/>
+	<copyField source="music director" dest="spellField"/>
+	<copyField source="lyricist" dest="spellField"/>
+	<copyField source="playback" dest="spellField"/>
+	<copyField source="producer" dest="spellField"/>
+	<copyField source="singer" dest="spellField"/>
+	<copyField source="keywords" dest="spellField"/>
+	<copyField source="genre" dest="spellField"/>
+	<copyField source="content_title" dest="spellField"/>
+        <copyField source="content_actor" dest="spellField"/>
+        <copyField source="content_director" dest="spellField"/>
+        <copyField source="content_music director" dest="spellField"/>
+        <copyField source="content_lyricist" dest="spellField"/>
+        <copyField source="content_playback" dest="spellField"/>
+        <copyField source="content_producer" dest="spellField"/>
+        <copyField source="content_singer" dest="spellField"/>
+        <copyField source="content_keywords" dest="spellField"/>
+        <copyField source="content_genre" dest="spellField"/>
+
+
+
+   <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+   <fieldType name="int" class="solr.TrieIntField" docValues="true" precisionStep="0" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="float" class="solr.TrieFloatField" docValues="true" precisionStep="0" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="long" class="solr.TrieLongField" docValues="true" precisionStep="0" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="double" class="solr.TrieDoubleField" docValues="true" precisionStep="0" positionIncrementGap="0" omitNorms="true"/>
+
+   <fieldType name="tint" class="solr.TrieIntField" docValues="true" precisionStep="8" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="tfloat" class="solr.TrieFloatField" docValues="true" precisionStep="8" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="tlong" class="solr.TrieLongField" docValues="true" precisionStep="8" positionIncrementGap="0" omitNorms="true"/>
+   <fieldType name="tdouble" class="solr.TrieDoubleField" docValues="true" precisionStep="8" positionIncrementGap="0" omitNorms="true"/>
+
+   <fieldType name="date" class="solr.TrieDateField" docValues="true" precisionStep="0" positionIncrementGap="0"/>
+   <fieldType name="tdate" class="solr.TrieDateField" docValues="true" precisionStep="6" positionIncrementGap="0"/>
+
+   <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="([^A-Za-z0-9 ])" replacement=""/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" preserveOriginal="1"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="50"/>
+	<filter class="solr.ReverseStringFilterFactory"/>
+	<filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="50"/>
+	<filter class="solr.ReverseStringFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+	<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="([^A-Za-z0-9 ])" replacement=""/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" preserveOriginal="1"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="text_autofill" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="50"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" preserveOriginal="1"/>
+      </analyzer>
+    </fieldType>
+    
+    <fieldType name="spellFieldType" class="solr.TextField" positionIncrementGap="100">
+   	<analyzer type="index">
+          <tokenizer class="solr.KeywordTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+	<filter class="solr.LowerCaseFilterFactory"/> 
+	</analyzer>
+    </fieldType>
+
+    <fieldType name="phonetics" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    	<analyzer type="index"> 
+        	<filter class="solr.LowerCaseFilterFactory"/>
+        	<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    	</analyzer>
+    	<analyzer type="query">             
+        	<tokenizer class="solr.WhitespaceTokenizerFactory"/>        
+        	<filter class="solr.LowerCaseFilterFactory"/>
+		<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>               
+    	</analyzer>
+  </fieldType>	
+
+	<solrQueryParser defaultOperator="AND"/>
+	<defaultSearchField>text</defaultSearchField>
+</schema>

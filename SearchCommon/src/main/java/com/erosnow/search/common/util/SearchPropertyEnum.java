@@ -38,6 +38,15 @@ public enum SearchPropertyEnum {
 	RELOAD_CACHE_INTERVAL("reload.cache.interval","900000"),
 	RELOAD_CACHE_PASSWORD("reload.cache.password","en@1234$"),
 	
+	DELTA_IMPORT_ENABLED("delta.import.enabled","true"),
+	DELTA_IMPORT_INTERVAL("delta.import.interval","60000"),
+	DELTA_IMPORT_DURATION_MINS("delta.import.duration.mins","1"),
+	DELTA_CORE_THREAD_POOL_SIZE("delta.core.thread.pool.size", "20"),
+	
+	DELETE_IMPORT_ENABLED("delete.import.enabled","true"),
+	DELETE_IMPORT_INTERVAL("delete.import.interval","60000"),
+	DELETE_IMPORT_DURATION_MINS("delete.import.duration.mins","1"),
+	
 	GRAPHITE_HOST("graphite.host","localhost"),
 	GRAPHITE_PORT("graphite.port","2003"),
 	GRAPHITE_REPORT_ENABLE("graphite.report.enable","true"),

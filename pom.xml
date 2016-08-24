@@ -14,6 +14,8 @@
 		<module>SearchCommon</module>
 		<module>SearchIndexerService</module>
 		<module>SearchIndexerWeb</module>
+		<module>SearchSearcherService</module>
+                <module>SearchSearcherWeb</module>
 	</modules>
 
 	<properties>
