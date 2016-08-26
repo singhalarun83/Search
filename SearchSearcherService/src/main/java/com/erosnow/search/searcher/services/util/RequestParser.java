@@ -26,6 +26,12 @@ public class RequestParser {
 				.setSpellCheckEnabled(request.isSpellCheckEnabled()).setStart(request.getStart())
 				.setSearchTerm(modifySearchTerm(request.getKeyword()))
 				.setPartialSearchEnabled(request.isPartialSearchEnabled());
+		if (request.getFl() != null && request.getFl().length > 0)
+			builder.setFl(request.getFl());
+		if (request.getFq() != null && request.getFq().length > 0)
+			builder.setFq(request.getFq());
+		if (request.getQf() != null && request.getQf().length > 0)
+			builder.setQf(request.getQf());
 		return builder;
 	}
 

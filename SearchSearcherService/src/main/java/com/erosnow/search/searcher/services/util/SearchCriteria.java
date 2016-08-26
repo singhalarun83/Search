@@ -48,6 +48,13 @@ public class SearchCriteria {
 		return this;
 	}
 
+	public SearchCriteria addFilter(String[] filters) {
+		for (String filter : filters) {
+			q.addFilterQuery(filter);
+		}
+		return this;
+	}
+
 	public SearchCriteria filterDirect(String filter) {
 		q.addFilterQuery(filter);
 		return this;
@@ -130,6 +137,16 @@ public class SearchCriteria {
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		q.setParam("fl", sb.toString());
+		return this;
+	}
+
+	public SearchCriteria qf(String[] fields) {
+		StringBuilder sb = new StringBuilder();
+		for (String field : fields) {
+			sb.append(field).append(' ');
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		q.setParam("qf", sb.toString());
 		return this;
 	}
 

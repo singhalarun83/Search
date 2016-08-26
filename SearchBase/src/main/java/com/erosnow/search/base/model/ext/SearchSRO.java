@@ -2,22 +2,16 @@ package com.erosnow.search.base.model.ext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class SearchSRO implements Serializable {
-	private List<String> itemIds = new ArrayList<String>();
 	private long noOfResults;
 	private boolean partialSearch;
 	private List<SpellSuggestionSRO> spellSuggestions;
 	private boolean spellCheckUsed;
-
-	public List<String> getItemIds() {
-		return itemIds;
-	}
-
-	public void setItemIds(List<String> itemIds) {
-		this.itemIds = itemIds;
-	}
+	private List<Map<String, Collection<Object>>> fieldValueMap = new ArrayList<Map<String, Collection<Object>>>();
 
 	public long getNoOfResults() {
 		return noOfResults;
@@ -50,4 +44,13 @@ public class SearchSRO implements Serializable {
 	public boolean isSpellCheckUsed() {
 		return spellCheckUsed;
 	}
+
+	public List<Map<String, Collection<Object>>> getFieldValueMap() {
+		return fieldValueMap;
+	}
+
+	public void setFieldValueMap(List<Map<String, Collection<Object>>> fieldValueMap) {
+		this.fieldValueMap = fieldValueMap;
+	}
+
 }

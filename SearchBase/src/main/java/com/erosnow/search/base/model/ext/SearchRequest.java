@@ -23,6 +23,12 @@ public class SearchRequest extends ServiceRequest {
 
 	private boolean partialSearchEnabled;
 
+	private String[] fl;
+
+	private String[] qf;
+
+	private String[] fq;
+
 	public String getQ() {
 		return q;
 	}
@@ -93,6 +99,30 @@ public class SearchRequest extends ServiceRequest {
 
 	public void setPartialSearchEnabled(boolean partialSearchEnabled) {
 		this.partialSearchEnabled = partialSearchEnabled;
+	}
+
+	public String[] getFl() {
+		return fl;
+	}
+
+	public void setFl(String[] fl) {
+		this.fl = fl;
+	}
+
+	public String[] getQf() {
+		return qf;
+	}
+
+	public void setQf(String[] qf) {
+		this.qf = qf;
+	}
+
+	public String[] getFq() {
+		return fq;
+	}
+
+	public void setFq(String[] fq) {
+		this.fq = fq;
 	}
 
 }

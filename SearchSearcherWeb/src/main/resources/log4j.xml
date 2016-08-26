@@ -45,7 +45,7 @@
 	</appender>
 
 	<root>
-		<priority value="INFO"></priority>
+		<priority value="DEBUG"></priority>
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
 	</root>

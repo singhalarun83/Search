@@ -24,6 +24,12 @@ public class QueryBuilder {
 
 	private String searchTerm;
 
+	private String[] fl;
+
+	private String[] qf;
+
+	private String[] fq;
+
 	public String getQ() {
 		return q;
 	}
@@ -111,6 +117,30 @@ public class QueryBuilder {
 
 	public void setPartialSearchEnabled(boolean partialSearchEnabled) {
 		this.partialSearchEnabled = partialSearchEnabled;
+	}
+
+	public String[] getFl() {
+		return fl;
+	}
+
+	public void setFl(String[] fl) {
+		this.fl = fl;
+	}
+
+	public String[] getQf() {
+		return qf;
+	}
+
+	public void setQf(String[] qf) {
+		this.qf = qf;
+	}
+
+	public String[] getFq() {
+		return fq;
+	}
+
+	public void setFq(String[] fq) {
+		this.fq = fq;
 	}
 
 }

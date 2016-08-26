@@ -1,6 +1,9 @@
 package com.erosnow.search.searcher.services.searcher.impl;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -14,7 +17,6 @@ import com.erosnow.search.base.model.ext.SpellSuggestionSRO;
 import com.erosnow.search.common.cache.CacheManager;
 import com.erosnow.search.common.cache.impl.SearchPropertyCache;
 import com.erosnow.search.common.util.SearchPropertyEnum;
-import com.erosnow.search.common.util.SolrFields;
 import com.erosnow.search.searcher.services.searcher.QueryService;
 import com.erosnow.search.searcher.services.searcher.SearchService;
 import com.erosnow.search.searcher.services.util.QueryBuilder;
@@ -43,13 +45,20 @@ public class SearchServiceImpl implements SearchService {
 		if (isPartialSearchEnabled(builder)) {
 			resp = handlePartialSearch(builder, sc, resp, searchSRO);
 		}
+		handleOutputFields(searchSRO, resp, builder);
+		return searchSRO;
+	}
 
+	private void handleOutputFields(SearchSRO searchSRO, QueryResponse resp, QueryBuilder builder) {
 		SolrDocumentList docList = resp.getResults();
 		for (int i = 0; i < Math.min(docList.size(), builder.getNumber()); i++) {
-			searchSRO.getItemIds().add((String) docList.get(i).get(SolrFields.ID));
+			Map<String, Collection<Object>> fieldValuesMap = new HashMap<String, Collection<Object>>();
+			for (String key : docList.get(i).keySet()) {
+				fieldValuesMap.put(key, docList.get(i).getFieldValues(key));
+			}
+			searchSRO.getFieldValueMap().add(fieldValuesMap);
 		}
 		searchSRO.setNoOfResults(docList.getNumFound());
-		return searchSRO;
 	}
 
 	private QueryResponse handlePartialSearch(QueryBuilder builder, SearchCriteria sc, QueryResponse resp,
@@ -70,7 +79,7 @@ public class SearchServiceImpl implements SearchService {
 			SearchSRO searchSRO) throws Exception {
 		List<SpellSuggestionSRO> spellSuggestionSROs = SearchUtil.getSpellCheckResponse(resp, builder.getKeyword());
 		sc.removeSpellCheck();
-		LOG.info("The number of results in spell checked query is " + spellSuggestionSROs.size());
+		LOG.info("The number of suggestions in original query are " + spellSuggestionSROs.size());
 		if (spellSuggestionSROs.size() > 0 && resp.getResults().size() <= 0) {
 			String spellquery = spellSuggestionSROs.get(0).getSpellSuggestion();
 			sc.query(spellquery);
@@ -100,6 +109,12 @@ public class SearchServiceImpl implements SearchService {
 		sc.rows(builder.getNumber()).start(builder.getStart());
 		SearchUtil.setDefaultSort(sc, builder.getSortBy());
 		sc.query(builder.getSearchTerm());
+		if (builder.getFl() != null)
+			sc.fl(builder.getFl());
+		if (builder.getQf() != null)
+			sc.qf(builder.getQf());
+		if (builder.getFq() != null)
+			sc.addFilter(builder.getFq());
 	}
 
 	public QueryResponse executeQuery(SearchCriteria sc) throws Exception {
